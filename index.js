@@ -48,9 +48,7 @@ async function run() {
             const database = client.db('doctors_portal');
 
             const appointmentsCollection = database.collection('appointments');
-
             const usersCollection = database.collection('users');
-
             const doctorsCollection = database.collection('doctors');
 
             app.get('/appointments', verifyToken, async (req, res) => {
@@ -134,7 +132,6 @@ async function run() {
                         res.status(403).json({ message: 'You do not have access to create new admin' })
                   }
             })
-
             //POST DOCTORS API
             app.post('/doctors', async (req, res) => {
                   const name = req.body.name;
