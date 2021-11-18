@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
-const stripe = require('stripe')(process.env.STRIPE_SECRET)
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const fileUpload = require('express-fileUpload');
 
 const port = process.env.PORT || 5000;
@@ -87,8 +87,15 @@ async function run() {
                         }
                   };
                   const result = await appointmentsCollection.updateOne(filter, updateDoc);
-                  res.json(res)
+                  res.json(result)
             })
+
+            app.post('/users', async (req, res) => {
+                  const user = req.body;
+                  const result = await usersCollection.insertOne(user);
+                  console.log(result);
+                  res.json(result);
+            });
 
             app.get('/users/:email', async (req, res) => {
                   const email = req.params.email;
@@ -101,16 +108,9 @@ async function run() {
                   res.json({ admin: isAdmin });
             })
 
-            app.post('/users', async (req, res) => {
-                  const user = req.body;
-                  const result = await usersCollection.insertOne(user);
-                  console.log(result);
-                  res.json(result);
-            });
-
             app.put('/users', async (req, res) => {
                   const user = req.body;
-                  // console.log('put', user);
+                  console.log('put', user);
                   const filter = { email: user.email };
                   const options = { upsert: true };
                   const updateDoc = { $set: user };
@@ -134,6 +134,7 @@ async function run() {
                         res.status(403).json({ message: 'You do not have access to create new admin' })
                   }
             })
+
             //POST DOCTORS API
             app.post('/doctors', async (req, res) => {
                   const name = req.body.name;
@@ -149,9 +150,6 @@ async function run() {
                   }
 
                   const result = await doctorsCollection.insertOne(doctor);
-                  // console.log('body', req.body);
-                  // console.log('files', req.files);
-                  // res.json({ success: true });
                   res.json(result);
             });
 
@@ -160,7 +158,7 @@ async function run() {
                   const cursor = doctorsCollection.find({});
                   const doctors = await cursor.toArray();
                   res.json(doctors);
-            })
+            });
 
             //PAYMENT
             app.post('/create-payment-intent', async (req, res) => {
